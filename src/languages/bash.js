@@ -369,6 +369,37 @@ export default function(hljs) {
     "yes"
   ];
 
+  // Long-form flag (--depth) or short flag (-x). Anchored to whitespace so
+  // we do not eat hyphens inside identifiers.
+  const FLAG = {
+    scope: 'params',
+    match: /(?<=\s)-{1,2}[A-Za-z][\w-]*\b/
+  };
+
+  // Hostnames and dotted identifiers (releases.coder.fish, example.com).
+  // Word-boundary anchored so it does not match the middle of a path.
+  const HOST = {
+    scope: 'link',
+    match: /\b[A-Za-z][\w-]*(?:\.[A-Za-z][\w-]*){1,}\b/
+  };
+
+  // The leading identifier on each line is the command name. Keywords
+  // and builtins are excluded via negative lookahead so the keywords
+  // pass keeps owning them with their own scopes.
+  const KEYWORD_OR_BUILTIN_RE = [
+    ...KEYWORDS, ...LITERALS,
+    ...SHELL_BUILT_INS, ...BASH_BUILT_INS, ...ZSH_BUILT_INS, ...GNU_CORE_UTILS,
+    'set', 'shopt'
+  ].join('|');
+  const COMMAND = {
+    scope: 'title.function',
+    match: new RegExp(
+      `^\\s*(?!(?:${KEYWORD_OR_BUILTIN_RE})\\b)[A-Za-z_][\\w.-]*`,
+      'm'
+    ),
+    relevance: 0
+  };
+
   return {
     name: 'Bash',
     aliases: [
@@ -397,6 +428,9 @@ export default function(hljs) {
       COMMENT,
       HERE_DOC,
       PATH_MODE,
+      COMMAND,
+      FLAG,
+      HOST,
       QUOTE_STRING,
       ESCAPED_QUOTE,
       APOS_STRING,
