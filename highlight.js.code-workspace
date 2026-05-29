@@ -1,0 +1,62 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "files.eol": "\n",
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[jsonc]": {
+      "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[css]": {
+      "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    "[markdown]": {
+      "editor.defaultFormatter": null
+    },
+    "eslint.validate": ["javascript", "typescript"],
+    "eslint.format.enable": true,
+    "eslint.options": {
+      "overrideConfigFile": ".eslintrc.js"
+    },
+    "eslint.workingDirectories": [{ "mode": "auto" }],
+    "prettier.enable": false,
+    "biome.enabled": false,
+    "javascript.format.enable": false,
+    "javascript.validate.enable": false,
+    "js/ts.implicitProjectConfig.checkJs": false,
+    "typescript.validate.enable": true,
+    "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+    "search.exclude": {
+      "build/**": true,
+      "node_modules/**": true,
+      ".worktrees/**": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "editorconfig.editorconfig"
+    ],
+    "unwantedRecommendations": [
+      "esbenp.prettier-vscode",
+      "biomejs.biome"
+    ]
+  }
+}
