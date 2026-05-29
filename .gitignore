@@ -22,3 +22,9 @@ extra*
 # misc
 /work
 /website
+
+# terraform artifacts
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
