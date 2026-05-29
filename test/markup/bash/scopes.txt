@@ -1,0 +1,3 @@
+curl --fail example.com
+docker run --rm ghcr.io/highlightjs/highlight.js
+ssh user@example.com
