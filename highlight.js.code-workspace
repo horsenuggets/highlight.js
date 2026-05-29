@@ -31,6 +31,7 @@
       "editor.defaultFormatter": null
     },
     "eslint.validate": ["javascript", "typescript"],
+    "eslint.format.enable": true,
     "eslint.options": {
       "overrideConfigFile": ".eslintrc.js"
     },
