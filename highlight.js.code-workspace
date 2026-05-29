@@ -30,7 +30,7 @@
     "[markdown]": {
       "editor.defaultFormatter": null
     },
-    "eslint.validate": ["javascript"],
+    "eslint.validate": ["javascript", "typescript"],
     "eslint.options": {
       "overrideConfigFile": ".eslintrc.js"
     },
