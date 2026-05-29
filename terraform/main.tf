@@ -18,11 +18,19 @@ locals {
   repo_name = "highlight.js"
 
   # CI runs on every PR via the existing GitHub Actions workflows. We gate
-  # main on the lint job since it is the project's authoritative style and
-  # correctness check; the markup test suite runs inside lint via
-  # `npm run lint` so it is covered transitively.
+  # main on the lint check (ESLint, from .github/workflows/lint.yml) plus a
+  # representative slice of the Node.js CI matrix (from tests.js.yml). The
+  # markup test suite runs inside `npm test` during the `node` build leg,
+  # and `test-browser` runs inside the `browser*` / `cdn` legs, so listing
+  # the latest LTS node version's matrix entries covers both. Older Node
+  # versions in the matrix are not gated so the protection survives when
+  # they EOL out of the workflow.
   required_checks = [
     "lint",
+    "build (22.x, node)",
+    "build (22.x, browser)",
+    "build (22.x, browser -n)",
+    "build (22.x, cdn :common)",
   ]
 }
 
