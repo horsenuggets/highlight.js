@@ -369,6 +369,59 @@ export default function(hljs) {
     "yes"
   ];
 
+  const COMMON_TLDS = [
+    "com", "net", "org", "edu", "gov", "mil",
+    "io", "dev", "app", "co", "ai", "gg",
+    "fm", "me", "tv", "sh", "fish", "cloud",
+    "local", "lan", "internal", "test"
+  ];
+  const HOSTNAME = new RegExp(regex.concat(
+    /localhost|(?:[A-Za-z0-9](?:[\w-]*[A-Za-z0-9])?\.)+/,
+    regex.either(...COMMON_TLDS),
+    /(?::\d{1,5})?(?=\/|\s|$)/
+  ));
+
+  // Long-form flag (--depth) or short flag (-x).
+  const FLAG = {
+    begin: [ /\s+/, /-{1,2}[A-Za-z][\w-]*\b/ ],
+    beginScope: {
+      2: 'flag'
+    },
+    relevance: 0
+  };
+
+  // Hostnames in argument position (releases.coder.fish, example.com).
+  // Keep common file extensions out so filenames like access.log do not
+  // false positive as hosts.
+  const HOST = {
+    begin: [ /(^|\s|@)/, HOSTNAME ],
+    beginScope: {
+      2: 'host'
+    },
+    relevance: 0
+  };
+
+  // The leading identifier on each line is the command name. Keywords
+  // and builtins are excluded via negative lookahead so the keywords
+  // pass keeps owning them with their own scopes.
+  const KEYWORD_OR_BUILTIN_RE = [
+    ...KEYWORDS, ...LITERALS,
+    ...SHELL_BUILT_INS, ...BASH_BUILT_INS, ...ZSH_BUILT_INS, ...GNU_CORE_UTILS,
+    'set', 'shopt'
+  ].join('|');
+  const COMMAND = {
+    begin: [
+      /^\s*/,
+      new RegExp(
+        `(?!(?:${KEYWORD_OR_BUILTIN_RE})\\b)(?![A-Za-z_][\\w.-]*[:=])[A-Za-z_][\\w.-]*`
+      )
+    ],
+    beginScope: {
+      2: 'command'
+    },
+    relevance: 0
+  };
+
   return {
     name: 'Bash',
     aliases: [
@@ -397,6 +450,9 @@ export default function(hljs) {
       COMMENT,
       HERE_DOC,
       PATH_MODE,
+      COMMAND,
+      FLAG,
+      HOST,
       QUOTE_STRING,
       ESCAPED_QUOTE,
       APOS_STRING,

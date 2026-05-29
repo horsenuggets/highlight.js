@@ -1,10 +1,10 @@
 <span class="hljs-comment"># a keyword as part of an option</span>
-mycmd --disable-foo
+<span class="hljs-command">mycmd</span> <span class="hljs-flag">--disable-foo</span>
 
 <span class="hljs-comment"># a keyword as part of a parameter</span>
-some-cmd set-some-setting
-some-cmd set_some_setting
+<span class="hljs-command">some-cmd</span> set-some-setting
+<span class="hljs-command">some-cmd</span> set_some_setting
 
 <span class="hljs-comment"># a keyword as part of command</span>
-check-case foo
-check_case foo
+<span class="hljs-command">check-case</span> foo
+<span class="hljs-command">check_case</span> foo

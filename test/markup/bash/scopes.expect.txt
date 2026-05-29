@@ -1,0 +1,3 @@
+<span class="hljs-command">curl</span> <span class="hljs-flag">--fail</span> <span class="hljs-host">example.com</span>
+<span class="hljs-command">docker</span> run <span class="hljs-flag">--rm</span> <span class="hljs-host">ghcr.io</span>/highlightjs/highlight.js
+<span class="hljs-command">ssh</span> user@<span class="hljs-host">example.com</span>

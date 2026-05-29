@@ -1,0 +1,7 @@
+<span class="hljs-command">npm</span> install <span class="hljs-flag">--depth</span> 1
+<span class="hljs-command">curl</span> https://releases.coder.fish/install.sh
+<span class="hljs-command">ssh</span> user@<span class="hljs-host">sub.example.com</span> <span class="hljs-flag">-p</span> 22
+<span class="hljs-built_in">cat</span> readme.adoc
+<span class="hljs-built_in">cd</span> ./config.d
+<span class="hljs-command">mycmd</span> <span class="hljs-flag">--flag-with-dashes</span> <span class="hljs-flag">-x</span>
+<span class="hljs-command">ping</span> <span class="hljs-host">sub.example.io</span>

@@ -1,0 +1,7 @@
+npm install --depth 1
+curl https://releases.coder.fish/install.sh
+ssh user@sub.example.com -p 22
+cat readme.adoc
+cd ./config.d
+mycmd --flag-with-dashes -x
+ping sub.example.io
