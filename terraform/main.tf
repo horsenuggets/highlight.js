@@ -75,10 +75,10 @@ resource "github_repository" "highlight_js" {
   }
 }
 
-# Branch protection for main: require all merges to go through a PR. We
-# don't require human approving reviews (`required_approving_review_count =
-# 0`) because Copilot review is the gate (`copilot_code_review.review_on_push`),
-# matching the established horsenuggets convention.
+# Branch protection for main: require all merges to go through a PR with one
+# approving review. Copilot reviews every push (`copilot_code_review.review_on_push`)
+# and its approval is the gate, which needs "Allow Copilot to approve pull
+# requests" turned on in the repo's Copilot code review settings.
 resource "github_repository_ruleset" "main" {
   name        = "main"
   repository  = github_repository.highlight_js.name
@@ -94,7 +94,7 @@ resource "github_repository_ruleset" "main" {
 
   rules {
     pull_request {
-      required_approving_review_count = 0
+      required_approving_review_count = 1
       dismiss_stale_reviews_on_push   = true
     }
 
