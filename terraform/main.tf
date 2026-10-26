@@ -75,10 +75,9 @@ resource "github_repository" "highlight_js" {
   }
 }
 
-# Branch protection for main: require all merges to go through a PR with one
-# approving review. Copilot reviews every push (`copilot_code_review.review_on_push`)
-# and its approval is the gate, which needs "Allow Copilot to approve pull
-# requests" turned on in the repo's Copilot code review settings.
+# Branch protection for main: require all merges to go through a PR. Copilot reviews
+# each non-draft PR once when it's opened, and its comments are addressed before merging
+# rather than gating the merge, so no approving review is required.
 resource "github_repository_ruleset" "main" {
   name        = "main"
   repository  = github_repository.highlight_js.name
@@ -94,13 +93,13 @@ resource "github_repository_ruleset" "main" {
 
   rules {
     pull_request {
-      required_approving_review_count = 1
+      required_approving_review_count = 0
       dismiss_stale_reviews_on_push   = true
     }
 
     # Automatically request Copilot code review on every non-draft PR.
     copilot_code_review {
-      review_on_push             = true
+      review_on_push             = false
       review_draft_pull_requests = false
     }
 
@@ -119,11 +118,10 @@ resource "github_repository_ruleset" "main" {
   }
 }
 
-# Keeps Copilot code review at the Lite effort level, which costs several times fewer AI
-# credits than the Balanced default, and warns on
-# every plan if the setting drifts.
+# Each pull request gets a single Copilot review, so it runs at the deeper Balanced level.
+# The module warns on every plan if the setting drifts.
 module "copilot_review" {
   source        = "https://github.com/horsenuggets/luau-cicd/archive/a342a72d078bca2ff7f529bff4a68a68743b313a.tar.gz//luau-cicd-a342a72d078bca2ff7f529bff4a68a68743b313a/Terraform/Modules/CopilotReview"
   repository    = github_repository.highlight_js.full_name
-  review_effort = "lite"
+  review_effort = "balanced"
 }
