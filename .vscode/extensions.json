@@ -4,7 +4,7 @@
     "editorconfig.editorconfig"
   ],
   "unwantedRecommendations": [
-    "esbenp.prettier-vscode",
-    "biomejs.biome"
+    "biomejs.biome",
+    "esbenp.prettier-vscode"
   ]
 }

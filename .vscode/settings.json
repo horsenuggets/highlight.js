@@ -1,13 +1,6 @@
 {
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
-  "editor.detectIndentation": false,
-  "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true,
-  "files.eol": "\n",
-  "editor.formatOnSave": false,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+  "[css]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
   },
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
@@ -18,35 +11,42 @@
   "[jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
-  "[css]": {
-    "editor.defaultFormatter": "vscode.css-language-features"
-  },
   "[markdown]": {
     "editor.defaultFormatter": null
+  },
+  "biome.enabled": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": false,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "eslint.format.enable": true,
+  "eslint.options": {
+    "overrideConfigFile": ".eslintrc.js"
   },
   "eslint.validate": [
     "javascript",
     "typescript"
   ],
-  "eslint.format.enable": true,
-  "eslint.options": {
-    "overrideConfigFile": ".eslintrc.js"
-  },
   "eslint.workingDirectories": [
     {
       "mode": "auto"
     }
   ],
-  "prettier.enable": false,
-  "biome.enabled": false,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
   "javascript.format.enable": false,
   "javascript.validate.enable": false,
   "js/ts.implicitProjectConfig.checkJs": false,
-  "typescript.validate.enable": true,
-  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "prettier.enable": false,
   "search.exclude": {
+    ".worktrees/**": true,
     "build/**": true,
-    "node_modules/**": true,
-    ".worktrees/**": true
-  }
+    "node_modules/**": true
+  },
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "typescript.validate.enable": true
 }
