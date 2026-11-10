@@ -14,7 +14,59 @@
   "[markdown]": {
     "editor.defaultFormatter": null
   },
+  "[terraform]": {
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[terraform-mock]": {
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[terraform-search]": {
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[terraform-test]": {
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[terraform-vars]": {
+    "editor.defaultFormatter": "jkillian.custom-local-formatters",
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
   "biome.enabled": false,
+  "customLocalFormatters.formatters": [
+    {
+      "command": "go -C submodules/tf4fmt run ./src/cmd/tf4fmt -",
+      "languages": [
+        "terraform",
+        "terraform-mock",
+        "terraform-search",
+        "terraform-test",
+        "terraform-vars"
+      ]
+    }
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
@@ -26,10 +78,7 @@
   "eslint.options": {
     "overrideConfigFile": ".eslintrc.js"
   },
-  "eslint.validate": [
-    "javascript",
-    "typescript"
-  ],
+  "eslint.validate": ["javascript", "typescript"],
   "eslint.workingDirectories": [
     {
       "mode": "auto"
