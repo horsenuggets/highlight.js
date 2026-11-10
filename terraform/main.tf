@@ -1,37 +1,37 @@
 terraform {
-  required_version = ">= 1.5"
+    required_version = ">= 1.5"
 
-  required_providers {
-    github = {
-      source  = "integrations/github"
-      version = "~> 6.0"
+    required_providers {
+        github = {
+            source  = "integrations/github"
+            version = "~> 6.0"
+        }
     }
-  }
 }
 
 provider "github" {
-  owner = "horsenuggets"
-  # Authenticates via GITHUB_TOKEN environment variable
+    owner = "horsenuggets"
+    # Authenticates via GITHUB_TOKEN environment variable
 }
 
 locals {
-  repo_name = "highlight.js"
+    repo_name = "highlight.js"
 
-  # CI runs on every PR via the existing GitHub Actions workflows. We gate
-  # main on the lint check (ESLint, from .github/workflows/lint.yml) plus a
-  # representative slice of the Node.js CI matrix (from tests.js.yml). The
-  # markup test suite runs inside `npm test` during the `node` build leg,
-  # and `test-browser` runs inside the `browser*` / `cdn` legs, so listing
-  # the latest LTS node version's matrix entries covers both. Older Node
-  # versions in the matrix are not gated so the protection survives when
-  # they EOL out of the workflow.
-  required_checks = [
-    "lint",
-    "build (22.x, node)",
-    "build (22.x, browser)",
-    "build (22.x, browser -n)",
-    "build (22.x, cdn :common)",
-  ]
+    # CI runs on every PR via the existing GitHub Actions workflows. We gate
+    # main on the lint check (ESLint, from .github/workflows/lint.yml) plus a
+    # representative slice of the Node.js CI matrix (from tests.js.yml). The
+    # markup test suite runs inside `npm test` during the `node` build leg,
+    # and `test-browser` runs inside the `browser*` / `cdn` legs, so listing
+    # the latest LTS node version's matrix entries covers both. Older Node
+    # versions in the matrix are not gated so the protection survives when
+    # they EOL out of the workflow.
+    required_checks = [
+        "lint",
+        "build (22.x, node)",
+        "build (22.x, browser)",
+        "build (22.x, browser -n)",
+        "build (22.x, cdn :common)",
+    ]
 }
 
 # Import the existing repository into state on first apply. The repo was
@@ -39,89 +39,89 @@ locals {
 # an import block `terraform apply` would attempt to create it and fail with
 # "name already exists on this account".
 import {
-  to = github_repository.highlight_js
-  # Terraform 1.5 requires the import block id to be a literal string known
-  # at plan time (expression-valued ids were added in 1.6). Keep this in
-  # sync with local.repo_name above.
-  id = "highlight.js"
+    to = github_repository.highlight_js
+    # Terraform 1.5 requires the import block id to be a literal string known
+    # at plan time (expression-valued ids were added in 1.6). Keep this in
+    # sync with local.repo_name above.
+    id = "highlight.js"
 }
 
 resource "github_repository" "highlight_js" {
-  name = local.repo_name
+    name = local.repo_name
 
-  has_issues   = true
-  has_projects = false
-  has_wiki     = false
+    has_issues   = true
+    has_projects = false
+    has_wiki     = false
 
-  allow_squash_merge = true
-  allow_merge_commit = false
-  allow_rebase_merge = false
+    allow_squash_merge = true
+    allow_merge_commit = false
+    allow_rebase_merge = false
 
-  squash_merge_commit_title   = "PR_TITLE"
-  squash_merge_commit_message = "PR_BODY"
+    squash_merge_commit_title   = "PR_TITLE"
+    squash_merge_commit_message = "PR_BODY"
 
-  delete_branch_on_merge = true
+    delete_branch_on_merge = true
 
-  # description, visibility, and topics are managed via the GitHub UI (or by
-  # the user) and ignored here so applies don't clobber out-of-band edits.
-  # has_downloads is deprecated by the provider.
-  lifecycle {
-    ignore_changes = [
-      description,
-      visibility,
-      topics,
-      has_downloads,
-    ]
-  }
+    # description, visibility, and topics are managed via the GitHub UI (or by
+    # the user) and ignored here so applies don't clobber out-of-band edits.
+    # has_downloads is deprecated by the provider.
+    lifecycle {
+        ignore_changes = [
+            description,
+            visibility,
+            topics,
+            has_downloads,
+        ]
+    }
 }
 
 # Branch protection for main: require all merges to go through a PR. Copilot reviews
 # each non-draft PR once when it's opened, and its comments are addressed before merging
 # rather than gating the merge, so no approving review is required.
 resource "github_repository_ruleset" "main" {
-  name        = "main"
-  repository  = github_repository.highlight_js.name
-  target      = "branch"
-  enforcement = "active"
+    name        = "main"
+    repository  = github_repository.highlight_js.name
+    target      = "branch"
+    enforcement = "active"
 
-  conditions {
-    ref_name {
-      include = ["~DEFAULT_BRANCH"]
-      exclude = []
-    }
-  }
-
-  rules {
-    pull_request {
-      required_approving_review_count = 0
-      dismiss_stale_reviews_on_push   = true
-    }
-
-    # Automatically request Copilot code review on every non-draft PR.
-    copilot_code_review {
-      review_on_push             = false
-      review_draft_pull_requests = false
-    }
-
-    dynamic "required_status_checks" {
-      for_each = length(local.required_checks) > 0 ? [1] : []
-      content {
-        dynamic "required_check" {
-          for_each = local.required_checks
-          content {
-            context        = required_check.value
-            integration_id = 0
-          }
+    conditions {
+        ref_name {
+            include = ["~DEFAULT_BRANCH"]
+            exclude = []
         }
-      }
     }
-  }
+
+    rules {
+        pull_request {
+            required_approving_review_count = 0
+            dismiss_stale_reviews_on_push   = true
+        }
+
+        # Automatically request Copilot code review on every non-draft PR.
+        copilot_code_review {
+            review_on_push             = false
+            review_draft_pull_requests = false
+        }
+
+        dynamic "required_status_checks" {
+            for_each = length(local.required_checks) > 0 ? [1] : []
+            content {
+                dynamic "required_check" {
+                    for_each = local.required_checks
+                    content {
+                        context        = required_check.value
+                        integration_id = 0
+                    }
+                }
+            }
+        }
+    }
 }
 
 # Each pull request gets a single Copilot review, so it runs at the deeper Balanced level.
 # The module warns on every plan if the setting drifts.
 module "copilot_review" {
-  source        = "https://github.com/horsenuggets/luau-cicd/archive/a342a72d078bca2ff7f529bff4a68a68743b313a.tar.gz//luau-cicd-a342a72d078bca2ff7f529bff4a68a68743b313a/Terraform/Modules/CopilotReview"
-  repository    = github_repository.highlight_js.full_name
-  review_effort = "balanced"
+    source        = "https://github.com/horsenuggets/luau-cicd/archive/a342a72d078bca2ff7f529bff4a68a68743b313a.tar.gz//luau-cicd-a342a72d078bca2ff7f529bff4a68a68743b313a/Terraform/Modules/CopilotReview"
+    repository    = github_repository.highlight_js.full_name
+    review_effort = "balanced"
 }
