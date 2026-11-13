@@ -7,6 +7,6 @@ charset = utf-8
 indent_style = space
 indent_size = 2
 
-[*.{tf,tfvars,tftest.hcl,tfmock.hcl,tfquery.hcl}]
+[*.{hcl,tf,tfvars}]
 indent_style = space
 indent_size = 4
