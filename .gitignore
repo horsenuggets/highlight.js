@@ -27,6 +27,5 @@ extra*
 
 # terraform artifacts
 .terraform/
-.terraform.lock.hcl
 *.tfstate
 *.tfstate.backup
