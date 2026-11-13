@@ -30,7 +30,7 @@ locals {
         "build (22.x, node)",
         "build (22.x, browser)",
         "build (22.x, browser -n)",
-        "build (22.x, cdn :common)",
+        "build (22.x, cdn :common)"
     ]
 }
 
@@ -70,7 +70,7 @@ resource "github_repository" "highlight_js" {
             description,
             visibility,
             topics,
-            has_downloads,
+            has_downloads
         ]
     }
 }
