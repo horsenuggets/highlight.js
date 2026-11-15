@@ -29,3 +29,7 @@ extra*
 .terraform/
 *.tfstate
 *.tfstate.backup
+
+# worktrees
+/.worktrees/
+/.wt/
