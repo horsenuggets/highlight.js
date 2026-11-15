@@ -1,5 +1,21 @@
+#
+# main.tf
+#
+# Manages this repository's GitHub settings, including merge options and the ruleset that
+# protects main with the required CI checks. Run plans and applies from this folder with
+# GITHUB_TOKEN set, for example "GITHUB_TOKEN=$(gh auth token) terraform plan".
+#
+
 terraform {
     required_version = ">= 1.5"
+
+    # State lives in HCP Terraform. The organization comes from the TF_CLOUD_ORGANIZATION
+    # environment variable, and plans run locally. Workspace names can't contain dots.
+    cloud {
+        workspaces {
+            name = "highlight-js"
+        }
+    }
 
     required_providers {
         github = {
@@ -10,22 +26,20 @@ terraform {
 }
 
 provider "github" {
+    # Authenticates via the GITHUB_TOKEN environment variable.
     owner = "horsenuggets"
-    # Authenticates via GITHUB_TOKEN environment variable
 }
 
 locals {
     repo_name = "highlight.js"
 
-    # CI runs on every PR via the existing GitHub Actions workflows. We gate
-    # main on the lint check (ESLint, from .github/workflows/lint.yml) plus a
-    # representative slice of the Node.js CI matrix (from tests.js.yml). The
-    # markup test suite runs inside `npm test` during the `node` build leg,
-    # and `test-browser` runs inside the `browser*` / `cdn` legs, so listing
-    # the latest LTS node version's matrix entries covers both. Older Node
-    # versions in the matrix are not gated so the protection survives when
-    # they EOL out of the workflow.
-    required_checks = [
+    # Main is gated on the lint check (ESLint, from .github/workflows/lint.yml) plus a
+    # representative slice of the Node.js CI matrix (from tests.js.yml). The markup test
+    # suite runs inside `npm test` during the `node` build leg, and `test-browser` runs
+    # inside the `browser*` and `cdn` legs, so listing the latest LTS Node version's
+    # matrix entries covers both. Older Node versions in the matrix aren't gated, so the
+    # protection survives when they're dropped from the workflow.
+    main_checks = [
         "lint",
         "build (22.x, node)",
         "build (22.x, browser)",
@@ -34,19 +48,14 @@ locals {
     ]
 }
 
-# Import the existing repository into state on first apply. The repo was
-# forked via the GitHub UI before this Terraform was introduced, so without
-# an import block `terraform apply` would attempt to create it and fail with
-# "name already exists on this account".
+# Adopt the existing repository instead of trying to create it. The id must be a literal
+# string on Terraform 1.5, so keep it in sync with local.repo_name.
 import {
-    to = github_repository.highlight_js
-    # Terraform 1.5 requires the import block id to be a literal string known
-    # at plan time (expression-valued ids were added in 1.6). Keep this in
-    # sync with local.repo_name above.
+    to = github_repository.repo
     id = "highlight.js"
 }
 
-resource "github_repository" "highlight_js" {
+resource "github_repository" "repo" {
     name = local.repo_name
 
     has_issues = true
@@ -62,25 +71,18 @@ resource "github_repository" "highlight_js" {
 
     delete_branch_on_merge = true
 
-    # description, visibility, and topics are managed via the GitHub UI (or by
-    # the user) and ignored here so applies don't clobber out-of-band edits.
-    # has_downloads is deprecated by the provider.
     lifecycle {
-        ignore_changes = [
-            description,
-            visibility,
-            topics,
-            has_downloads
-        ]
+        # Destroying this resource would delete the repository on GitHub.
+        prevent_destroy = true
+
+        # Managed in the GitHub UI, so applies don't overwrite them.
+        ignore_changes = [allow_auto_merge, description, topics, visibility]
     }
 }
 
-# Branch protection for main: require all merges to go through a PR. Copilot reviews
-# each non-draft PR once when it's opened, and its comments are addressed before merging
-# rather than gating the merge, so no approving review is required.
 resource "github_repository_ruleset" "main" {
     name = "main"
-    repository = github_repository.highlight_js.name
+    repository = github_repository.repo.name
     target = "branch"
     enforcement = "active"
 
@@ -92,36 +94,24 @@ resource "github_repository_ruleset" "main" {
     }
 
     rules {
+        non_fast_forward = true
+        deletion = true
+
         pull_request {
             required_approving_review_count = 0
             dismiss_stale_reviews_on_push = true
         }
 
-        # Automatically request Copilot code review on every non-draft PR.
-        copilot_code_review {
-            review_on_push = false
-            review_draft_pull_requests = false
-        }
+        required_status_checks {
+            strict_required_status_checks_policy = true
 
-        dynamic "required_status_checks" {
-            for_each = length(local.required_checks) > 0 ? [1] : []
-            content {
-                dynamic "required_check" {
-                    for_each = local.required_checks
-                    content {
-                        context = required_check.value
-                        integration_id = 0
-                    }
+            dynamic "required_check" {
+                for_each = local.main_checks
+                content {
+                    context = required_check.value
+                    integration_id = 0
                 }
             }
         }
     }
-}
-
-# Each pull request gets a single Copilot review, so it runs at the deeper Balanced level.
-# The module warns on every plan if the setting drifts.
-module "copilot_review" {
-    source = "https://github.com/horsenuggets/luau-cicd/archive/a342a72d078bca2ff7f529bff4a68a68743b313a.tar.gz//luau-cicd-a342a72d078bca2ff7f529bff4a68a68743b313a/Terraform/Modules/CopilotReview"
-    repository = github_repository.highlight_js.full_name
-    review_effort = "balanced"
 }
